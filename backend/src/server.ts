@@ -64,6 +64,20 @@ app.use('/api/reviews', reviewsRoutes);
 app.use('/api/interview', interviewRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'success',
+    message: 'AI Career Coach API is running!',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      user: '/api/user'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'AI Career Coach API is running' });
