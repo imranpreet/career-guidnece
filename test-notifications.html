@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Newsletter Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4F46E5;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #4338CA;
+        }
+        button.secondary {
+            background: #10B981;
+        }
+        button.secondary:hover {
+            background: #059669;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #10B981;
+        }
+        .error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #EF4444;
+        }
+        .info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #3B82F6;
+        }
+        #notifications {
+            margin-top: 20px;
+        }
+        .notification-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4F46E5;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .notification-email {
+            font-weight: bold;
+            color: #4F46E5;
+        }
+        .notification-time {
+            color: #6B7280;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Newsletter Notification System Test</h1>
+        
+        <div class="section">
+            <h2>Step 1: Subscribe to Newsletter</h2>
+            <p>This will create a new subscription that should appear in the dashboard notifications.</p>
+            <input type="email" id="subscribeEmail" placeholder="Enter email address (e.g., test@example.com)">
+            <button onclick="subscribeNewsletter()">Subscribe Newsletter</button>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Check Notifications (Requires Login)</h2>
+            <p>Login to your account first, then fetch notifications.</p>
+            <input type="email" id="loginEmail" placeholder="Your email" value="sukhdeep24@navgurukul.org">
+            <input type="password" id="loginPassword" placeholder="Your password" value="">
+            <button onclick="login()">Login</button>
+            <button class="secondary" onclick="fetchNotifications()">Get Notifications</button>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Mark Notifications as Read</h2>
+            <button onclick="markAsRead()">Mark All as Read</button>
+        </div>
+
+        <div id="result"></div>
+        <div id="notifications"></div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('token') || '';
+
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = type;
+            resultDiv.style.display = 'block';
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function subscribeNewsletter() {
+            const email = document.getElementById('subscribeEmail').value.trim();
+            
+            if (!email) {
+                showResult('Please enter an email address', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/newsletter/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult(`✅ Success! ${email} subscribed to newsletter. Check dashboard notifications!`, 'success');
+                    document.getElementById('subscribeEmail').value = '';
+                } else {
+                    showResult(`❌ Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showResult('Please enter email and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('token', authToken);
+                    showResult(`✅ Login successful! Token saved.`, 'success');
+                } else {
+                    showResult(`❌ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function fetchNotifications() {
+            if (!authToken) {
+                showResult('⚠️ Please login first!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/newsletter/notifications', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const notificationsDiv = document.getElementById('notifications');
+                    
+                    if (data.notifications.length === 0) {
+                        notificationsDiv.innerHTML = '<p style="color: #6B7280;">No new notifications</p>';
+                        showResult('No new notifications found', 'info');
+                    } else {
+                        notificationsDiv.innerHTML = '<h3>📬 Notifications:</h3>' + 
+                            data.notifications.map(notif => `
+                                <div class="notification-item">
+                                    <div>
+                                        <strong>New Subscriber:</strong> 
+                                        <span class="notification-email">${notif.email}</span>
+                                    </div>
+                                    <div>${notif.message}</div>
+                                    <div class="notification-time">${new Date(notif.subscribedAt).toLocaleString()}</div>
+                                </div>
+                            `).join('');
+                        showResult(`✅ Found ${data.count} notification(s)`, 'success');
+                    }
+                } else {
+                    showResult(`❌ Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function markAsRead() {
+            if (!authToken) {
+                showResult('⚠️ Please login first!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/newsletter/notifications/mark-read', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('✅ All notifications marked as read', 'success');
+                    document.getElementById('notifications').innerHTML = '';
+                    // Fetch notifications again to show empty state
+                    setTimeout(fetchNotifications, 1000);
+                } else {
+                    showResult(`❌ Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check if already logged in
+        if (authToken) {
+            showResult('✅ You are already logged in!', 'success');
+        }
+    </script>
+</body>
+</html>

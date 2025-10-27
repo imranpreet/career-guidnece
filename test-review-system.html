@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Review System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2 px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4F46E5;
+            padding-bottom: 10px;
+        }
+        .review {
+            border-left: 4px solid #4F46E5;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .review-header {
+            font-weight: bold;
+            color: #4F46E5;
+        }
+        .review-company {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .stars {
+            color: #FFA500;
+        }
+        button {
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #4338CA;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 Review System Test</h1>
+    
+    <div class="section">
+        <h2>Submit a New Review</h2>
+        <form id="reviewForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="text" id="role" placeholder="Your Role" required>
+            <input type="text" id="company" placeholder="Company (Optional)">
+            <input type="number" id="rating" min="1" max="5" placeholder="Rating (1-5)" required>
+            <textarea id="review" rows="4" placeholder="Your Review" required></textarea>
+            <button type="submit">Submit Review</button>
+        </form>
+        <p id="submitMessage"></p>
+    </div>
+
+    <div class="section">
+        <h2>All Reviews (Admin View)</h2>
+        <button onclick="loadAllReviews()">Load All Reviews</button>
+        <div id="allReviews"></div>
+    </div>
+
+    <div class="section">
+        <h2>Approved Reviews (Public View)</h2>
+        <button onclick="loadApprovedReviews()">Load Approved Reviews</button>
+        <div id="approvedReviews"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/reviews';
+
+        // Submit Review
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageEl = document.getElementById('submitMessage');
+            
+            const reviewData = {
+                name: document.getElementById('name').value,
+                role: document.getElementById('role').value,
+                company: document.getElementById('company').value,
+                rating: parseInt(document.getElementById('rating').value),
+                review: document.getElementById('review').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reviewData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageEl.className = 'success';
+                    messageEl.textContent = '✅ ' + data.message;
+                    document.getElementById('reviewForm').reset();
+                    setTimeout(() => {
+                        loadAllReviews();
+                    }, 1000);
+                } else {
+                    messageEl.className = 'error';
+                    messageEl.textContent = '❌ ' + data.message;
+                }
+            } catch (error) {
+                messageEl.className = 'error';
+                messageEl.textContent = '❌ Error submitting review: ' + error.message;
+            }
+        });
+
+        // Load All Reviews
+        async function loadAllReviews() {
+            const container = document.getElementById('allReviews');
+            container.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}/all`);
+                const data = await response.json();
+
+                if (data.reviews.length === 0) {
+                    container.innerHTML = '<p>No reviews yet.</p>';
+                    return;
+                }
+
+                let html = `<p><strong>Total: ${data.stats.total} | Approved: ${data.stats.approved} | Pending: ${data.stats.pending}</strong></p>`;
+                
+                data.reviews.forEach(review => {
+                    const stars = '⭐'.repeat(review.rating);
+                    const status = review.isApproved ? '✅ Approved' : '⏳ Pending';
+                    html += `
+                        <div class="review">
+                            <div class="review-header">${review.name} - ${review.role}</div>
+                            <div class="review-company">${review.company || 'N/A'}</div>
+                            <div class="stars">${stars} (${review.rating}/5)</div>
+                            <p>${review.review}</p>
+                            <p><small>${status} | Created: ${new Date(review.createdAt).toLocaleString()}</small></p>
+                            ${!review.isApproved ? `<button onclick="approveReview('${review._id}')">Approve</button>` : ''}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<p class="error">Error loading reviews: ${error.message}</p>`;
+            }
+        }
+
+        // Load Approved Reviews
+        async function loadApprovedReviews() {
+            const container = document.getElementById('approvedReviews');
+            container.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}/approved`);
+                const data = await response.json();
+
+                if (data.reviews.length === 0) {
+                    container.innerHTML = '<p>No approved reviews yet.</p>';
+                    return;
+                }
+
+                let html = '';
+                data.reviews.forEach(review => {
+                    const stars = '⭐'.repeat(review.rating);
+                    html += `
+                        <div class="review">
+                            <div class="review-header">${review.name} - ${review.role}</div>
+                            <div class="review-company">${review.company || 'N/A'}</div>
+                            <div class="stars">${stars} (${review.rating}/5)</div>
+                            <p>${review.review}</p>
+                            <p><small>Created: ${new Date(review.createdAt).toLocaleString()}</small></p>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<p class="error">Error loading reviews: ${error.message}</p>`;
+            }
+        }
+
+        // Approve Review
+        async function approveReview(reviewId) {
+            try {
+                const response = await fetch(`${API_URL}/approve/${reviewId}`, {
+                    method: 'PATCH'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Review approved successfully!');
+                    loadAllReviews();
+                    loadApprovedReviews();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error approving review: ' + error.message);
+            }
+        }
+
+        // Load reviews on page load
+        window.addEventListener('load', () => {
+            loadAllReviews();
+            loadApprovedReviews();
+        });
+    </script>
+</body>
+</html>

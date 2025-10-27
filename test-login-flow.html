@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login Flow</title>
+</head>
+<body>
+    <h1>Test Login Flow</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="checkToken()">Check Token</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <pre id="output"></pre>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        async function testLogin() {
+            output.textContent = 'Testing login...\n';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'Test123!'
+                    }),
+                });
+                
+                const data = await response.json();
+                output.textContent += JSON.stringify(data, null, 2) + '\n';
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    output.textContent += '\n✅ Token saved to localStorage\n';
+                    output.textContent += '✅ Now go to http://localhost:3000 and check navbar\n';
+                }
+            } catch (error) {
+                output.textContent += '❌ Error: ' + error.message;
+            }
+        }
+        
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            output.textContent = 'Token: ' + (token ? token.substring(0, 50) + '...' : 'NOT FOUND') + '\n';
+            output.textContent += 'User: ' + (user || 'NOT FOUND');
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            output.textContent = '✅ Storage cleared';
+        }
+    </script>
+</body>
+</html>
