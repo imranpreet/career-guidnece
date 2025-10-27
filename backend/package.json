@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "Backend for AI Career Coach platform",
   "main": "dist/server.js",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
