@@ -26,7 +26,8 @@ app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'http://localhost:3000',
     'http://localhost:3001',
-    'https://cozy-kulfi-0eaf16.netlify.app'
+    'https://cozy-kulfi-0eaf16.netlify.app',
+    'https://brilliant-chaja-18da89.netlify.app'
   ],
   credentials: true
 }));
