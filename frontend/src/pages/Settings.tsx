@@ -60,7 +60,7 @@ const Settings: React.FC = () => {
         return;
       }
 
-      const response = await fetch('${API_URL}/user/profile', {
+      const response = await fetch(`${API_URL}/user/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ const Settings: React.FC = () => {
       const token = localStorage.getItem('token');
       const skillsArray = formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
 
-      const response = await fetch('${API_URL}/user/profile', {
+      const response = await fetch(`${API_URL}/user/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -173,7 +173,7 @@ const Settings: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('${API_URL}/user/change-password', {
+      const response = await fetch(`${API_URL}/user/change-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

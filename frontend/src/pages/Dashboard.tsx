@@ -116,7 +116,7 @@ const Dashboard: React.FC = () => {
       if (!token) return;
 
       console.log('Refreshing dashboard data...');
-      const response = await fetch('${API_URL}/user/dashboard', {
+      const response = await fetch(`${API_URL}/user/dashboard`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('${API_URL}/newsletter/notifications', {
+      const response = await fetch(`${API_URL}/newsletter/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ const Dashboard: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      await fetch('${API_URL}/newsletter/notifications/mark-read', {
+      await fetch(`${API_URL}/newsletter/notifications/mark-read`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -214,7 +214,7 @@ const Dashboard: React.FC = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch('${API_URL}/user/dashboard', {
+        const response = await fetch(`${API_URL}/user/dashboard`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
