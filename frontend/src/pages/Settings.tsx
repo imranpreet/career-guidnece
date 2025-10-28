@@ -8,6 +8,8 @@ import {
   ArrowLeftOnRectangleIcon 
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
@@ -58,7 +60,7 @@ const Settings: React.FC = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/user/profile', {
+      const response = await fetch('${API_URL}/user/profile', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ const Settings: React.FC = () => {
       const token = localStorage.getItem('token');
       const skillsArray = formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
 
-      const response = await fetch('http://localhost:5000/api/user/profile', {
+      const response = await fetch('${API_URL}/user/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -171,7 +173,7 @@ const Settings: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5000/api/user/change-password', {
+      const response = await fetch('${API_URL}/user/change-password', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

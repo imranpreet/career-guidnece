@@ -14,6 +14,9 @@ import {
 } from '@heroicons/react/24/outline';
 import AIChat from '../components/AIChat';
 import ResumeBuilder from '../components/ResumeBuilder';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 import QuizSystem from '../components/QuizSystem';
 import InterviewPractice from '../components/InterviewPractice';
 
@@ -113,7 +116,7 @@ const Dashboard: React.FC = () => {
       if (!token) return;
 
       console.log('Refreshing dashboard data...');
-      const response = await fetch('http://localhost:5000/api/user/dashboard', {
+      const response = await fetch('${API_URL}/user/dashboard', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -148,7 +151,7 @@ const Dashboard: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:5000/api/newsletter/notifications', {
+      const response = await fetch('${API_URL}/newsletter/notifications', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -170,7 +173,7 @@ const Dashboard: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      await fetch('http://localhost:5000/api/newsletter/notifications/mark-read', {
+      await fetch('${API_URL}/newsletter/notifications/mark-read', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -211,7 +214,7 @@ const Dashboard: React.FC = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/user/dashboard', {
+        const response = await fetch('${API_URL}/user/dashboard', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
