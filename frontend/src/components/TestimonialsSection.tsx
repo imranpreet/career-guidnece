@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from './ui/ToastProvider';
 import { ChevronLeftIcon, ChevronRightIcon, StarIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 // Default testimonials (fallback if no reviews from backend)
 const defaultTestimonials = [
   {
@@ -73,7 +75,7 @@ const TestimonialsSection: React.FC = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('/api/reviews/approved?limit=20');
+        const response = await fetch(`${API_URL}/reviews/approved?limit=20`);
         if (response.ok) {
           const data = await response.json();
           
@@ -153,7 +155,7 @@ const TestimonialsSection: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/reviews/submit', {
+      const response = await fetch(`${API_URL}/reviews/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RocketLaunchIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -60,7 +62,7 @@ const CTASection: React.FC = () => {
 
         // Call backend AI API
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/api/ai/chat', {
+        const response = await fetch(`${API_URL}/ai/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

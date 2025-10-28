@@ -6,6 +6,8 @@ import {
   CpuChipIcon
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 interface Message {
   id: string;
   text: string;
@@ -62,7 +64,7 @@ const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/ai/chat', {
+      const response = await fetch(`${API_URL}/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
