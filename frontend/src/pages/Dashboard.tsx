@@ -14,11 +14,10 @@ import {
 } from '@heroicons/react/24/outline';
 import AIChat from '../components/AIChat';
 import ResumeBuilder from '../components/ResumeBuilder';
-
-const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
-
 import QuizSystem from '../components/QuizSystem';
 import InterviewPractice from '../components/InterviewPractice';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
 
 interface JobRole {
   title: string;
