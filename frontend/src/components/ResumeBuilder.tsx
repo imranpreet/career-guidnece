@@ -9,6 +9,8 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 interface ResumeData {
   personalInfo: {
     fullName: string;
@@ -271,7 +273,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ isOpen, onClose }) => {
       const token = localStorage.getItem('token');
       console.log('Generating resume with data:', resumeData);
       
-      const response = await fetch('/api/resume/generate', {
+      const response = await fetch(`${API_URL}/resume/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -291,7 +293,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({ isOpen, onClose }) => {
         // Track resume generation in user stats
         try {
           if (token) {
-            const statsResponse = await fetch('/api/user/resume-generated', {
+            const statsResponse = await fetch(`${API_URL}/user/resume-generated`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

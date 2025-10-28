@@ -12,6 +12,8 @@ import {
   MicrophoneIcon
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 interface InterviewPracticeProps {
   isOpen: boolean;
   onClose: () => void;
@@ -92,7 +94,7 @@ const InterviewPractice: React.FC<InterviewPracticeProps> = ({ isOpen, onClose, 
 
   const fetchInterviewTypes = async () => {
     try {
-      const response = await fetch('/api/interview/types');
+      const response = await fetch(`${API_URL}/interview/types`);
       if (response.ok) {
         const data = await response.json();
         setInterviewTypes(data.types);
@@ -144,7 +146,7 @@ const InterviewPractice: React.FC<InterviewPracticeProps> = ({ isOpen, onClose, 
   const startInterview = async (type: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/interview/${type}/questions?count=4`);
+      const response = await fetch(`${API_URL}/interview/${type}/questions?count=4`);
       if (response.ok) {
         const data = await response.json();
         setSession({
@@ -325,7 +327,7 @@ const InterviewPractice: React.FC<InterviewPracticeProps> = ({ isOpen, onClose, 
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/interview/submit', {
+      const response = await fetch(`${API_URL}/interview/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -353,7 +355,7 @@ const InterviewPractice: React.FC<InterviewPracticeProps> = ({ isOpen, onClose, 
         try {
           const token = localStorage.getItem('token');
           if (token) {
-            const statsResponse = await fetch('/api/user/interview-score', {
+            const statsResponse = await fetch(`${API_URL}/user/interview-score`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -408,7 +410,7 @@ const InterviewPractice: React.FC<InterviewPracticeProps> = ({ isOpen, onClose, 
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const statsResponse = await fetch('/api/user/interview-score', {
+          const statsResponse = await fetch(`${API_URL}/user/interview-score`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

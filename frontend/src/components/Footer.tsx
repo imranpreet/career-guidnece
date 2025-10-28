@@ -5,6 +5,8 @@ import {
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
@@ -28,7 +30,7 @@ const Footer: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/newsletter/subscribe', {
+      const response = await fetch(`${API_URL}/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -12,6 +12,8 @@ import {
   LightBulbIcon
 } from '@heroicons/react/24/outline';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://career-guidnece-production-d6a5.up.railway.app/api';
+
 interface QuizSystemProps {
   isOpen: boolean;
   onClose: () => void;
@@ -2230,7 +2232,7 @@ const QuizSystem: React.FC<QuizSystemProps> = ({ isOpen, onClose, onQuizComplete
           correctAnswers
         };
 
-        const response = await fetch(`/api/quiz/${selectedTopic}/submit`, {
+        const response = await fetch(`${API_URL}/quiz/${selectedTopic}/submit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2244,7 +2246,7 @@ const QuizSystem: React.FC<QuizSystemProps> = ({ isOpen, onClose, onQuizComplete
           
           // Update user stats with quiz score
           try {
-            const statsResponse = await fetch('/api/user/quiz-score', {
+            const statsResponse = await fetch(`${API_URL}/user/quiz-score`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
