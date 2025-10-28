@@ -4,6 +4,11 @@
   command = "npm run build"
   publish = "build"
 
+# Environment variables (context-specific)
+[context.production.environment]
+  REACT_APP_API_URL = "https://career-guidnece-production-d6a5.up.railway.app/api"
+  REACT_APP_ENV = "production"
+
 # Redirect all routes to index.html for React Router
 [[redirects]]
   from = "/*"
